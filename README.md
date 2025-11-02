@@ -34,33 +34,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-Requirements:
-
-    npm install zustand
-    npm install prisma --save-dev
-    npm install @prisma/client
-    npm install pg
-    npm install lucide-react
-    npm install tailwindcss-rtl
-
-    Initialize prisma:
-        npx prisma init
-        // Create Model in prisma/schema.prisma
-
-        npx prisma db pull
-
-|| npx prisma migrate reset
-
-        export DATABASE_URL="postgresql://postgres:saeid@localhost:5432/real_estate_db?schema=public"
-        
-        npx prisma migrate dev --name init
-
-        npx install next-auth
-
-        npm install @auth/prisma-adapter
-        npm install @next-auth/prisma-adapter
-# real-estate-nextjs
-# real-estate-nextjs
-# real-estate-nextjs
-# real-estate-nextjs
