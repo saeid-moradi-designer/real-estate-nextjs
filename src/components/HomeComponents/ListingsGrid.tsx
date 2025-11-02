@@ -38,7 +38,7 @@ const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
 
             <div className="mt-4 flex items-center justify-between">
               <span className="text-blue-600 font-bold">
-                {listing.price.toLocaleString()} تومان
+                {(listing.price ?? 0).toLocaleString()} تومان
               </span>
 
               <Link
