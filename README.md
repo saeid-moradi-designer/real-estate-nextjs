@@ -53,12 +53,14 @@ Requirements:
 || npx prisma migrate reset
 
         export DATABASE_URL="postgresql://postgres:saeid@localhost:5432/real_estate_db?schema=public"
+        
         npx prisma migrate dev --name init
 
         npx install next-auth
 
         npm install @auth/prisma-adapter
         npm install @next-auth/prisma-adapter
+# real-estate-nextjs
 # real-estate-nextjs
 # real-estate-nextjs
 # real-estate-nextjs
