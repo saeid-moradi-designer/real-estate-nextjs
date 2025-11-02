@@ -15,7 +15,7 @@ export default async function Home(): Promise<JSX.Element> {
       <HeroSection listingsCount={listings.length} />
 
       {/* Listings Grid */}
-      {/* <ListingsGrid listings={listings ?? []} /> */}
+      <ListingsGrid listings={listings ?? []} />
     </>
   );
 }
