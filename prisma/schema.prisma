@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int        @id @default(autoincrement())
+  name               String?
+  email              String?    @unique
+  password           String?
+  phone              String?    @unique
+  image              String?
+  bio                String?
+  emailVerified      DateTime?  // 👈 اضافه کن این خط رو
+  isVerified         Boolean    @default(false)
+  role               Role       @default(USER)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  properties         Property[]
+  accounts           Account[]
+  sessions           Session[]
+}
+
+
+
+
+model Account {
+  id                 Int       @id @default(autoincrement())
+  userId             Int
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?   @db.Text
+  access_token       String?   @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?   @db.Text
+  session_state      String?
+
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id                 Int       @id @default(autoincrement())
+  sessionToken       String    @unique
+  userId             Int
+  expires            DateTime
+
+  user               User      @relation(fields: [userId], references: [id])
+}
+
+model Property {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  propertyType   String      // نوع ملک (مثلاً آپارتمان، ویلا، زمین و ...)
+  dealType       String      // نوع معامله (مثلاً فروش، اجاره، رهن)
+  price          Float?      // قیمت (برای فروش)
+  rentPrice      Float?      // مبلغ اجاره (برای اجاره)
+  depositPrice   Float?      // مبلغ رهن (برای رهن کامل)
+  area           Float       // متراژ
+  roomCount      Int?        // تعداد اتاق‌ها
+  bathroomCount  Int?        // تعداد سرویس‌ها
+  floor          Int?        // طبقه
+  totalFloors    Int?        // تعداد کل طبقات ساختمان
+  yearBuilt      Int?        // سال ساخت
+  parking        Boolean     @default(false)
+  elevator       Boolean     @default(false)
+  storage        Boolean     @default(false)
+  furnished      Boolean     @default(false)
+  status         String      // وضعیت ملک (مثلاً "active" یا "sold")
+
+  location       String
+  images         String[]    // آدرس عکس‌ها
+  ownerId        Int
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  owner          User        @relation(fields: [ownerId], references: [id])
+}
+
+
+enum Role {
+  USER
+  AGENT
+  ADMIN
+}
