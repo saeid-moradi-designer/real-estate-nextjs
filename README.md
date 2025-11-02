@@ -38,3 +38,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     npm install lucide-react
     npm install prisma @prisma/client
     npm isntall dotenv
+    npm install -g @liara/cli
