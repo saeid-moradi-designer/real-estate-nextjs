@@ -3,14 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, Twitter, Phone, Mail, MapPin } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Phone,
+  Mail,
+  MapPin,
+} from "lucide-react";
+import { SocialIcon } from "react-social-icons";
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-900 text-gray-300 border-t border-gray-700 mt-10">
       <div className="max-w-screen-xl mx-auto p-6 md:pt-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-
           {/* 🔹 لوگو و توضیح */}
           <div>
             <Link
@@ -42,7 +49,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/listings" className="hover:text-blue-500 transition">
+                <Link
+                  href="/listings"
+                  className="hover:text-blue-500 transition"
+                >
                   املاک
                 </Link>
               </li>
@@ -52,7 +62,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-blue-500 transition">
+                <Link
+                  href="/contact"
+                  className="hover:text-blue-500 transition"
+                >
                   تماس با ما
                 </Link>
               </li>
@@ -67,15 +80,15 @@ const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-gray-400">
               <li className="flex items-center gap-2">
                 <Phone size={16} className="text-blue-500" />
-                <span>۰۹۱۲۱۲۳۴۵۶۷</span>
+                <span>۰۹۰۲۰۰۷۹۱۰۱</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail size={16} className="text-blue-500" />
-                <span>info@ahmadiestate.ir</span>
+                <span>Mehrabahmadifabilsara@gmail.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <MapPin size={16} className="text-blue-500" />
-                <span>تهران، خیابان ولیعصر</span>
+                <span>تهران</span>
               </li>
             </ul>
           </div>
@@ -86,15 +99,13 @@ const Footer: React.FC = () => {
               دنبال کنید
             </h3>
             <div className="flex gap-4 text-gray-400">
-              <Link href="#" className="hover:text-blue-600 transition">
-                <Facebook />
-              </Link>
-              <Link href="#" className="hover:text-pink-500 transition">
-                <Instagram />
-              </Link>
-              <Link href="#" className="hover:text-sky-400 transition">
-                <Twitter />
-              </Link>
+              <SocialIcon url="https://whatsapp.com/channel/0029Vb6IPL8IyPtK5CV1or07" />
+              
+              <SocialIcon url="https://t.me/Khan_RealEstate_CustomersClub" />
+
+              <SocialIcon url="facebook" />
+
+              
             </div>
           </div>
         </div>

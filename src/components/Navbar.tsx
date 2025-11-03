@@ -13,8 +13,8 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { label: "صفحه‌اصلی", href: "/" },
   { label: "املاک", href: "/listings" },
-  { label: "درباره ما", href: "/about" },
-  { label: "تماس با ما", href: "/contact" },
+  { label: "درباره من", href: "/about" },
+  { label: "پل‌ ارتباطی", href: "/contact" },
 ];
 
 const Navbar: React.FC = () => {
