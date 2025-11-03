@@ -42,7 +42,7 @@ const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
               </span>
 
               <Link
-                href={`/listings/${String(listing.id)}`}
+                href={`/properties/${String(listing.id)}`}
                 className="text-white bg-blue-500 px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition"
               >
                 جزئیات
