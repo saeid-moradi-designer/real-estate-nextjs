@@ -11,7 +11,7 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { label: "خانه", href: "/" },
+  { label: "صفحه‌اصلی", href: "/" },
   { label: "املاک", href: "/listings" },
   { label: "درباره ما", href: "/about" },
   { label: "تماس با ما", href: "/contact" },
