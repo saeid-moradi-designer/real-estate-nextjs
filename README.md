@@ -42,3 +42,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     npm install react-social-icons
     npm install embla-carousel-react
     npm install embla-carousel-autoplay
+    npm install motion
