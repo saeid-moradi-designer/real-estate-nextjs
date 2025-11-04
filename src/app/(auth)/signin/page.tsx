@@ -1,89 +1,92 @@
-// src/components/AuthForm.tsx
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Mail, Lock } from "lucide-react";
 
-type AuthMode = "signIn" | "signUp";
-
-export default function AuthForm() {
-  const [mode, setMode] = useState<AuthMode>("signIn");
+export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-
-  const toggleMode = () => {
-    setMode(mode === "signIn" ? "signUp" : "signIn");
-    setEmail("");
-    setPassword("");
-    setName("");
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (mode === "signIn") {
-      console.log("Signing in:", { email, password });
-    } else {
-      console.log("Signing up:", { name, email, password });
-    }
+    console.log("Signing in:", { email, password });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center  p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          {mode === "signIn" ? "ورود" : "ثبت نام"}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === "signUp" && (
-            <div>
-              <label className="block text-gray-700 mb-1">نام کامل</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="نام شما"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
-            </div>
-          )}
-          <div>
-            <label className="block text-gray-700 mb-1">ایمیل</label>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200 px-4">
+      <div className="bg-white/80 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-3xl w-full max-w-md p-10 transition-all duration-300 hover:shadow-[#FEC36055]">
+        {/* 🔹 لوگو */}
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/images/logo-gold.png"
+            width={140}
+            height={140}
+            alt="لوگوی سایت"
+            className="object-contain drop-shadow-lg"
+            priority
+          />
+        </div>
+
+        {/* 🔹 تیتر و توضیح */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-extrabold text-gray-800 tracking-tight">
+            ورود به حساب
+          </h1>
+          <p className="text-gray-500 text-sm mt-2">
+            لطفاً برای ادامه، اطلاعات ورود خود را وارد کنید
+          </p>
+        </div>
+
+        {/* 🔹 فرم ورود */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="relative">
+            <Mail className="absolute right-3 top-3.5 text-gray-400 w-5 h-5" />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@email.com"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="ایمیل"
+              className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-xl bg-white/70 focus:outline-none focus:ring-2 focus:ring-[#FEC360] focus:border-[#FEC360] shadow-sm transition-all duration-200 text-gray-800 placeholder-gray-400"
               required
             />
           </div>
-          <div>
-            <label className="block text-gray-700 mb-1">رمز عبور</label>
+
+          <div className="relative">
+            <Lock className="absolute right-3 top-3.5 text-gray-400 w-5 h-5" />
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="رمز عبور"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-xl bg-white/70 focus:outline-none focus:ring-2 focus:ring-[#FEC360] focus:border-[#FEC360] shadow-sm transition-all duration-200 text-gray-800 placeholder-gray-400"
               required
             />
           </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+            className="w-full bg-[#FEC360] hover:bg-[#fed27a] text-black py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200"
           >
-            {mode === "signIn" ? "ورود" : "ثبت نام"}
+            ورود
           </button>
         </form>
-        <p className="mt-4 text-center text-gray-600">
-          {mode === "signIn" ? "حساب ندارید؟" : "قبلاً ثبت نام کرده‌اید؟"}{" "}
-          <span
-            onClick={toggleMode}
-            className="text-blue-500 cursor-pointer font-semibold hover:underline"
+
+        {/* 🔹 لینک ثبت‌نام */}
+        <div className="mt-6 text-center text-gray-600 text-sm">
+          حساب ندارید؟{" "}
+          <Link
+            href="/signup"
+            className="text-[#FEC360] font-semibold hover:underline"
           >
-            {mode === "signIn" ? "ثبت نام" : "ورود"}
-          </span>
+            ثبت‌نام کنید
+          </Link>
+        </div>
+
+        {/* 🔹 جزئیات پایینی (اختیاری) */}
+        <p className="text-xs text-center text-gray-400 mt-6">
+          © {new Date().getFullYear()} RealEstate | تمام حقوق محفوظ است
         </p>
       </div>
     </div>

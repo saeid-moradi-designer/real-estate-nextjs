@@ -1,124 +1,98 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { Building2, Users, Lightbulb, Phone } from "lucide-react";
+import { Home, Briefcase, PhoneCall, Award } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* ✅ Hero Section */}
-      <section className="relative h-[350px] w-full">
+    <div className="min-h-screen bg-gradient-to-b from-[#faf8f4] to-[#f2efea] flex flex-col items-center justify-center px-6 py-20">
+      {/* Header */}
+      <div className="text-center mb-16">
         <Image
-          src="/images/khan-banner.jpg"
-          alt="درباره سامانه خان"
-          fill
-          className="object-cover brightness-75"
+          src="/images/building2.png"
+          alt="لوگو"
+          width={110}
+          height={110}
+          className="mx-auto mb-6 drop-shadow-md"
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white bg-black/40">
-          <h1 className="text-4xl font-bold mb-3">درباره سامانه خان</h1>
-          <p className="text-lg max-w-2xl">
-            پلتفرمی برای آگاهی، انتخاب هوشمند و خرید مطمئن در بازار املاک ایران
-          </p>
-        </div>
-      </section>
+        <h1 className="text-5xl font-extrabold text-gray-800 mb-3 tracking-tight">
+          درباره من
+        </h1>
+        <p className="text-gray-500 max-w-2xl mx-auto leading-relaxed text-lg">
+          جایی که تخصص، تجربه و اعتماد با هم ترکیب می‌شوند تا مسیر شما به سوی یک انتخاب ملکی مطمئن هموار شود.
+        </p>
+      </div>
 
-      {/* ✅ About Content */}
-      <section className="max-w-5xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              ما چه هدفی داریم؟
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              «خان» با هدف ساده‌سازی فرایند خرید، فروش و سرمایه‌گذاری در حوزه
-              املاک طراحی شده است. ما اعتقاد داریم آگاهی، مهم‌ترین گام در تصمیمات
-              مالی است. به همین دلیل، تلاش می‌کنیم اطلاعات دقیق، آموزش‌های
-              کاربردی و تحلیل‌های روز بازار مسکن را در اختیار شما قرار دهیم.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              چه به دنبال خانه‌ای برای زندگی باشید، چه قصد سرمایه‌گذاری در ملک
-              داشته باشید، «خان» همراه مطمئن شماست.
-            </p>
-          </div>
-
-          <div className="relative h-72 rounded-2xl overflow-hidden shadow-lg">
-            <Image
-              src="/images/building2.png"
-              alt="تیم سامانه خان"
-              fill
-              className="object-contain"
-            />
+      {/* Content */}
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
+        {/* Image section */}
+        <div className="relative w-full h-[480px] rounded-3xl overflow-hidden shadow-2xl border border-[#FEC36033]">
+          <Image
+            src="/images/ahmadi-pic.jpg"
+            alt="محراب احمدی"
+            fill
+            className="object-cover grayscale hover:grayscale-0 transition duration-700"
+          />
+          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/50 to-transparent text-white p-6">
+            <h2 className="text-2xl font-semibold">محراب احمدی</h2>
+            <p className="text-sm text-gray-200">مشاور رسمی خرید و فروش املاک لوکس</p>
           </div>
         </div>
-      </section>
 
-      {/* ✅ Mission / Values Section */}
-      <section className="bg-white py-16 border-y">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold mb-10 text-gray-800">
-            مأموریت ما در سامانه <span className="text-blue-600">خان</span>
+        {/* Text section */}
+        <div className="bg-white/70 backdrop-blur-md border border-[#FEC36033] shadow-xl rounded-3xl p-10 transition hover:shadow-[#FEC36055]">
+          <h2 className="text-2xl font-bold text-gray-800 mb-5">
+            سلام، من <span className="text-[#FEC360]">محراب احمدی</span> هستم 👋
           </h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: Building2,
-                title: "بازار شفاف املاک",
-                desc: "نمایش دقیق اطلاعات و قیمت‌ها برای تصمیم‌گیری آگاهانه.",
-              },
-              {
-                icon: Users,
-                title: "ارتباط با مشاوران حرفه‌ای",
-                desc: "امکان گفت‌وگو و دریافت مشاوره از کارشناسان معتبر.",
-              },
-              {
-                icon: Lightbulb,
-                title: "آموزش و آگاهی",
-                desc: "پست‌ها و ویدیوهای آموزشی برای خریداران و فروشندگان.",
-              },
-              {
-                icon: Phone,
-                title: "پشتیبانی سریع",
-                desc: "در هر لحظه آماده پاسخ‌گویی به کاربران هستیم.",
-              },
-            ].map(({ icon: Icon, title, desc }, i) => (
-              <div
-                key={i}
-                className="bg-blue-50 rounded-2xl p-6 shadow hover:shadow-md transition"
-              >
-                <Icon className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-gray-800 mb-2">{title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
+          <p className="text-gray-700 leading-relaxed mb-6 text-justify">
+            با بیش از <strong className="text-[#FEC360]">۸ سال تجربه</strong> در زمینه خرید، فروش و سرمایه‌گذاری ملکی،
+            تمرکز من بر روی ایجاد ارتباطی صادقانه و حرفه‌ای با مشتریان است.  
+            باور دارم که خرید ملک تنها یک معامله نیست، بلکه قدمی مهم برای ساخت آینده‌ی بهتر شماست.
+          </p>
+
+          <p className="text-gray-700 leading-relaxed mb-6 text-justify">
+            مأموریت من کمک به شما برای یافتن بهترین فرصت‌های سرمایه‌گذاری در مناطق شاخص تهران، مانند نیاوران،
+            زعفرانیه و فرمانیه است — با رویکردی دقیق، شفاف و مطابق با ارزش واقعی بازار.
+          </p>
+
+          {/* Highlights */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+            <div className="flex items-center gap-3 bg-[#fff9f0] border border-[#FEC36033] rounded-xl p-4">
+              <Briefcase className="text-[#FEC360]" />
+              <span className="text-gray-800 text-sm font-medium">
+                مشاوره تخصصی خرید و فروش املاک
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 bg-[#fff9f0] border border-[#FEC36033] rounded-xl p-4">
+              <Home className="text-[#FEC360]" />
+              <span className="text-gray-800 text-sm font-medium">
+                ارزیابی و قیمت‌گذاری دقیق ملک
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 bg-[#fff9f0] border border-[#FEC36033] rounded-xl p-4">
+              <PhoneCall className="text-[#FEC360]" />
+              <span className="text-gray-800 text-sm font-medium">
+                ارتباط مستقیم و پاسخ‌گویی سریع
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 bg-[#fff9f0] border border-[#FEC36033] rounded-xl p-4">
+              <Award className="text-[#FEC360]" />
+              <span className="text-gray-800 text-sm font-medium">
+                همکاری با برندهای ساختمانی لوکس
+              </span>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* ✅ Call to Action */}
-      <section className="py-14 text-center bg-blue-600 text-white">
-        <h3 className="text-2xl font-bold mb-4">
-          آماده‌ای با «خان» ملک دلخواهت را پیدا کنی؟
-        </h3>
-        <p className="opacity-90 mb-6">
-          از پست‌های آموزشی و لیست املاک ما دیدن کن و با کارشناسان در تماس باش.
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link
-            href="/listings"
-            className="bg-white text-blue-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
-          >
-            مشاهده املاک
-          </Link>
-          <Link
-            href="/contact"
-            className="bg-blue-500 border border-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
-          >
-            تماس با ما
-          </Link>
-        </div>
-      </section>
-    </main>
+      {/* Footer note */}
+      <p className="text-gray-400 text-xs mt-20 text-center">
+        © {new Date().getFullYear()} تمامی حقوق برای <span className="text-[#FEC360]">محراب احمدی</span> محفوظ است.
+      </p>
+    </div>
   );
 }
