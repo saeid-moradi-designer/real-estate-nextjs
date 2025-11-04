@@ -90,13 +90,14 @@ model Post {
   title       String
   content     String?
   imageUrl    String?
-  videoUrl    String?
-  category    String?   // ✅ اضافه شد
-  published   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  videoUrl    String?     // لینک ساده ویدیو (اختیاری)
+  embedCode   String?     @db.Text // 👈 برای iframe یا کد امبد آپارات
+  category    String?
+  published   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   authorId    Int?
-  author      User?      @relation("UserPosts", fields: [authorId], references: [id])
+  author      User?       @relation("UserPosts", fields: [authorId], references: [id])
 }
 
 

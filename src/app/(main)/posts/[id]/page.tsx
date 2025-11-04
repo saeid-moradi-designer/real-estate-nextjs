@@ -84,7 +84,30 @@ export default async function PostPage({
       {/* 🔹 محتوای پست */}
       <article className="max-w-3xl w-full bg-white border border-gray-200 rounded-2xl shadow p-6 leading-relaxed">
         <h1 className="text-2xl font-bold mb-4">{post.title || "بدون عنوان"}</h1>
-        <p className="text-gray-700 whitespace-pre-line">{post.content || "بدون محتوا"}</p>
+
+        {/* ✅ نمایش محتوای متنی */}
+        {post.content && (
+          <p className="text-gray-700 whitespace-pre-line mb-6">
+            {post.content}
+          </p>
+        )}
+
+        {/* ✅ نمایش ویدیو آپارات اگر موجود بود */}
+        {post.embedCode && (
+          <div
+            className="my-8"
+            dangerouslySetInnerHTML={{ __html: post.embedCode }}
+          />
+        )}
+
+        {/* ✅ اگر فقط لینک ویدیو ساده بود */}
+        {!post.embedCode && post.videoUrl && (
+          <video
+            src={post.videoUrl}
+            controls
+            className="my-8 rounded-lg shadow-md w-full"
+          />
+        )}
 
         {/* 🔹 نویسنده */}
         <div className="mt-8 border-t pt-4 text-sm text-gray-600">
@@ -95,7 +118,8 @@ export default async function PostPage({
 
         {/* 🔹 تاریخ انتشار */}
         <p className="text-xs text-gray-400 mt-4">
-          منتشر شده در تاریخ {new Date(post.createdAt).toLocaleDateString("fa-IR")}
+          منتشر شده در تاریخ{" "}
+          {new Date(post.createdAt).toLocaleDateString("fa-IR")}
         </p>
       </article>
     </main>
