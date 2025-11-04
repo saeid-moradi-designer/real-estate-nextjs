@@ -28,7 +28,7 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-400 to-purple-500 p-4">
+    <div className="min-h-screen flex items-center justify-center  p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           {mode === "signIn" ? "ورود" : "ثبت نام"}

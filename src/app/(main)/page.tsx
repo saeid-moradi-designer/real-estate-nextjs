@@ -49,7 +49,7 @@ export default async function HomePage(): Promise<JSX.Element>{
     orderBy: { createdAt: "desc" },
   });
   return (
-    <main className="min-h-screen bg-gray-50">
+    <>
       {/* ✅ Hero Slider */}
       <EmblaSlider />
 
@@ -141,7 +141,7 @@ export default async function HomePage(): Promise<JSX.Element>{
       </section>
 
       {/* ✅ CTA Section */}
-      <section className="bg-blue-600 py-10 text-center text-white">
+      <section className="bg-blue-600 py-10 text-center text-white w-full">
         <h3 className="text-2xl font-bold mb-3">به دنبال ملک دلخواهت هستی؟</h3>
         <p className="opacity-90 mb-6">
           لیست کامل املاک را مشاهده کن و با چند کلیک فیلتر کن.
@@ -153,6 +153,6 @@ export default async function HomePage(): Promise<JSX.Element>{
           مشاهده املاک
         </Link>
       </section>
-    </main>
+    </>
   );
 }
