@@ -4,15 +4,45 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Lock, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 🔹 تابع ثبت‌نام
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signing up:", { name, email, password });
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "مشکلی در ثبت‌نام پیش آمد ❌");
+        return;
+      }
+
+      alert("ثبت‌نام با موفقیت انجام شد ✅");
+
+      // ⏩ انتقال به صفحه ورود
+      router.push("/signin");
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("خطا در ارتباط با سرور ⚠️");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,9 +110,14 @@ export default function SignUpPage() {
 
           <button
             type="submit"
-            className="w-full bg-[#FEC360] hover:bg-[#fed27a] text-black py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+            disabled={loading}
+            className={`w-full py-3 rounded-xl font-semibold shadow-md transition-all duration-200 ${
+              loading
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-[#FEC360] hover:bg-[#fed27a] text-black"
+            }`}
           >
-            ساخت حساب
+            {loading ? "در حال ثبت..." : "ساخت حساب"}
           </button>
         </form>
 
