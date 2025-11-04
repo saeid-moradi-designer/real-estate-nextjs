@@ -7,7 +7,7 @@ interface HeroSectionProps {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ listingsCount }) => {
   return (
-    <section className="text-center w-full mx-auto min-h-[1px] bg-[linear-gradient(to_left,#2ABB9C,#3EB3DA)] pt-3 pb-2 text-white px-4">
+    <section className="text-center w-full mx-auto min-h-[1px] bg-[linear-gradient(to_left,#2ABB9C,#3EB3DA)] pt-3 pb-2 text-white px-4 mt-4">
       <h1 className="text-base mb-2 sm:mb-4 leading-relaxed text-center font-semibold">
         <span className="border-b">
           {listingsCount.toLocaleString('fa-IR') + " "}
