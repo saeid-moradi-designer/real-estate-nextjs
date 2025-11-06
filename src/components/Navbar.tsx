@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-
 
 interface NavLink {
   label: string;
@@ -27,6 +26,7 @@ const Navbar: React.FC = () => {
   const pathname = usePathname();
 
   const userName = session?.user?.name || null;
+  const userEmail = session?.user?.email || null;
 
   return (
       <header className="fixed w-full z-50 top-0 start-0 bg-gray-900/90 backdrop-blur-md border-b border-gray-700 shadow-sm">
@@ -64,6 +64,17 @@ const Navbar: React.FC = () => {
             {/* نمایش نام کاربر یا دکمه ورود */}
             {userName ? (
                 <div className="flex items-center gap-4">
+                  {/* دکمه داشبورد */}
+                  <Link href="/dashboard">
+                    <button
+                        type="button"
+                        className="flex items-center gap-2 bg-[#FEC360] hover:bg-[#fed27a] text-gray-900 font-semibold rounded-xl px-4 py-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      داشبورد
+                    </button>
+                  </Link>
+
                   <span className="text-gray-200 font-medium">سلام، {userName}</span>
                   <button
                       onClick={() => signOut({ callbackUrl: "/" })}
@@ -119,15 +130,27 @@ const Navbar: React.FC = () => {
 
                   <li className="pt-4 border-t border-gray-700">
                     {userName ? (
-                        <div className="flex items-center justify-between px-4">
-                          <span className="text-gray-200 font-medium">سلام، {userName}</span>
-                          <button
-                              onClick={() => signOut({ callbackUrl: "/" })}
-                              className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl px-4 py-2 transition-all duration-200"
+                        <div className="space-y-4">
+                          {/* دکمه داشبورد در موبایل */}
+                          <Link
+                              href="/dashboard"
+                              onClick={() => setIsOpen(false)}
+                              className="flex items-center justify-center gap-2 w-full bg-[#FEC360] hover:bg-[#fed27a] text-gray-900 font-semibold rounded-xl px-6 py-3 transition-all duration-200 shadow-md"
                           >
-                            <LogOut className="w-4 h-4" />
-                            خروج
-                          </button>
+                            <LayoutDashboard className="w-4 h-4" />
+                            رفتن به داشبورد
+                          </Link>
+
+                          <div className="flex items-center justify-between px-4">
+                            <span className="text-gray-200 font-medium">سلام، {userName}</span>
+                            <button
+                                onClick={() => signOut({ callbackUrl: "/" })}
+                                className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl px-4 py-2 transition-all duration-200"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              خروج
+                            </button>
+                          </div>
                         </div>
                     ) : (
                         <Link
