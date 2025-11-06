@@ -30,13 +30,25 @@ export const authOptions: AuthOptions = {
     ],
 
     session: {
-        strategy: "jwt" as SessionStrategy, // 👈 اصلاح شد
+        strategy: "jwt" as SessionStrategy,
     },
 
     secret: process.env.NEXTAUTH_SECRET,
     pages: {
         signIn: "/signin",
+        signOut: "/", // 👈 این خط را اضافه کنید
     },
+
+    // 👇 این کال‌بک را اضافه کنید
+    callbacks: {
+        async redirect({ url, baseUrl }) {
+            // اگر کاربر از صفحه خروج آمده باشد، به صفحه اصلی هدایت شود
+            if (url.includes('/signout') || url.includes('/api/auth/signout')) {
+                return `${baseUrl}/`;
+            }
+            return url.startsWith(baseUrl) ? url : baseUrl;
+        }
+    }
 };
 
 const handler = NextAuth(authOptions);

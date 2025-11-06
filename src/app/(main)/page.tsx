@@ -18,7 +18,7 @@ interface Post {
 export default async function HomePage(): Promise<JSX.Element>{
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
-    take: 6
+    take: 12
   });
 
   const features = [
