@@ -46,4 +46,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
     npm install bcrypt
     npm install bcryptjs jsonwebtoken
     npm install next-auth @auth/prisma-adapter bcrypt
+    npm install uuid
+    npm install @types/uuid --save-dev  # برای TypeScript
 
