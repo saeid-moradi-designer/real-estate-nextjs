@@ -128,8 +128,8 @@ export default function DashboardClient({ userName, userEmail }: DashboardClient
                 <header className="bg-white shadow-sm p-4 lg:p-6">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                         <div>
-                            <h2 className="text-xl lg:text-2xl font-bold text-gray-800">خوش آمدید {safeUserName} 👋</h2>
-                            <p className="text-gray-600 mt-1 text-sm lg:text-base">به پنل مدیریت خوش آمدید</p>
+                            <h2 className="text-xl mr-12 lg:text-2xl font-bold text-gray-800">خوش آمدید {safeUserName} 👋</h2>
+                            <p className="text-gray-600 mt-3 text-sm lg:text-base">به پنل مدیریت خوش آمدید</p>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="bg-blue-50 px-3 py-1 lg:px-4 lg:py-2 rounded-lg text-blue-700 font-medium text-sm lg:text-base truncate max-w-[200px] lg:max-w-none">
