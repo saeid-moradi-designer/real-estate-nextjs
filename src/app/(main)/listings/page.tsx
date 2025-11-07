@@ -6,12 +6,30 @@ import { House, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface Listing {
-    id: number | string;
+    id: number; // فقط number چون در Prisma Int است
     title: string;
     description: string;
     price: number | null;
     images: string[];
-    location?: string;
+    location: string; // اجباری چون در Prisma اجباری است
+    propertyType?: string;
+    dealType?: string;
+    rentPrice?: number | null;
+    depositPrice?: number | null;
+    area?: number;
+    roomCount?: number | null;
+    bathroomCount?: number | null;
+    floor?: number | null;
+    totalFloors?: number | null;
+    yearBuilt?: number | null;
+    parking?: boolean;
+    elevator?: boolean;
+    storage?: boolean;
+    furnished?: boolean;
+    status?: string;
+    ownerId?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export default async function Home(): Promise<JSX.Element> {

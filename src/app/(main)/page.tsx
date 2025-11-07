@@ -8,11 +8,13 @@ import { JSX } from "react";
 interface Post {
   id: number;
   title: string;
-  content: string;
-  imageUrl?: string;
-  videoUrl?: string;
-  createdAt: string;
-  category?: string;
+  content: string | null; // اضافه کردن null
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+  createdAt: string; // یا Date اگر از Date استفاده می‌کنید
+  category?: string | null;
+  published?: boolean;
+  authorId?: number | null;
 }
 
 export default async function HomePage(): Promise<JSX.Element>{
