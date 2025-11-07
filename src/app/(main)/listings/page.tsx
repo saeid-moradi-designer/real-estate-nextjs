@@ -1,3 +1,6 @@
+export const runtime = "nodejs";
+
+
 import prisma from "@/lib/prisma";
 import HeroSection from "@/components/HomeComponents/HeroSection";
 import ListingsGrid from "@/components/HomeComponents/ListingsGrid";
