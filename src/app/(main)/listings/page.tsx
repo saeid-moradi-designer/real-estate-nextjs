@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import HeroSection from "@/components/HomeComponents/HeroSection";
 import ListingsGrid from "@/components/HomeComponents/ListingsGrid";
 import { JSX } from "react";
-import { House, Plus, ArrowLeft } from "lucide-react";
+import { House, Plus } from "lucide-react";
 import Link from "next/link";
 
 interface Listing {
