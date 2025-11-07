@@ -36,7 +36,6 @@ interface UserProfile {
 const navLinks: NavLink[] = [
   { label: "صفحه اصلی", href: "/", icon: Home },
   { label: "املاک", href: "/listings", icon: Building },
-  { label: "مقالات", href: "/posts", icon: FileText },
   { label: "درباره ما", href: "/about", icon: Info },
   { label: "تماس با ما", href: "/contact", icon: Phone },
 ];
