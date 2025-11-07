@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import DeletePropertyButton from "@/components/DeletePropertyButton";
 
 export default async function PropertiesPage() {
     const session = await getServerSession(authOptions);
@@ -87,7 +88,7 @@ export default async function PropertiesPage() {
                                 </td>
                                 <td className="py-3 px-4 space-x-2 flex gap-2 justify-end">
                                     <Link
-                                        href={`/dashboard/properties/${property.id}`}
+                                        href={`/properties/${property.id}`}
                                         className="text-blue-600 hover:text-blue-800 text-sm"
                                     >
                                         مشاهده
@@ -98,6 +99,10 @@ export default async function PropertiesPage() {
                                     >
                                         ویرایش
                                     </Link>
+                                    <DeletePropertyButton
+                                        propertyId={property.id} // ID از نوع number
+                                        propertyTitle={property.title}
+                                    />
                                 </td>
                             </tr>
                         ))
