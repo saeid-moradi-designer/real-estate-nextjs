@@ -44,17 +44,6 @@ export default async function Home(): Promise<JSX.Element> {
         // در صورت خطا، posts به صورت آرایه خالی باقی می‌ماند
     }
 
-    // try {
-    //     // ✅ دریافت املاک از دیتابیس
-    //     listings = await prisma.property.findMany({
-    //         orderBy: { createdAt: "desc" },
-    //     });
-    //     console.log("Fetched listings:", listings.length); // برای دیباگ
-    // } catch (error) {
-    //     console.error("Error fetching listings:", error);
-    //     // در صورت خطا، listings به صورت آرایه خالی باقی می‌ماند
-    // }
-
     return (
         <>
             {/* استفاده از HeroSection */}
