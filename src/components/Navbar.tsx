@@ -310,7 +310,7 @@ const Navbar: React.FC = () => {
             {/* هدر منوی موبایل */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 relative">
+                <div className="w-25 h-25 relative">
                   <Image
                     src="/images/logo-gold.svg"
                     alt="لوگو خان"
@@ -318,7 +318,6 @@ const Navbar: React.FC = () => {
                     className="object-contain"
                   />
                 </div>
-                <span className="text-xl font-bold text-white">خان</span>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
