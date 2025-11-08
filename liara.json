@@ -1,12 +1,13 @@
 {
   "app": "saeid-nextjs",
+  "platform": "node",
   "port": 3000,
   "build": {
     "location": "iran"
   },
   "disks": [
     {
-      "name": "images-disk",
+      "name": "khan-disk",
       "mountPath": "/storage/images"
     }
   ]
