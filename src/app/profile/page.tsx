@@ -169,9 +169,6 @@ const ProfilePage = () => {
                       <User className="w-16 h-16 text-gray-400" />
                     )}
                   </div>
-                  <button className="absolute bottom-2 right-2 bg-[#FEC360] text-gray-900 p-2 rounded-full shadow-lg hover:bg-amber-500 transition">
-                    <Camera className="w-4 h-4" />
-                  </button>
                 </div>
 
                 <h2 className="text-xl font-bold text-gray-900 mt-4">
