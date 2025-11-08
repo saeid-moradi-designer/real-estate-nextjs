@@ -53,9 +53,8 @@ const Navbar: React.FC = () => {
     const fetchUserProfile = async () => {
       if (session?.user?.email) {
         try {
-          const response = await fetch(
-            `/api/users/profile?email=${session.user.email}`
-          );
+          // تغییر این خط - بدون پارامتر email
+          const response = await fetch('/api/users/profile');
           if (response.ok) {
             const userData = await response.json();
             setUserProfile(userData);
@@ -83,7 +82,7 @@ const Navbar: React.FC = () => {
     }
 
     // اگر فقط نام فایل در دیتابیس ذخیره شده باشد
-    return `/api/images/profile/${imageName}`;
+    return `/api/images/profiles/${imageName}`;
   };
 
   // افکت برای تشخیص اسکرول
