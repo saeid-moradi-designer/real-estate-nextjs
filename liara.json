@@ -1,6 +1,5 @@
 {
   "app": "saeid-nextjs",
-  "platform": "node",
   "port": 3000,
   "build": {
     "location": "iran"
