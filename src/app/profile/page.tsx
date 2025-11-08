@@ -15,8 +15,7 @@ import {
   XCircle,
   Home,
   FileText,
-  ArrowLeft,
-  Camera,
+  ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
 

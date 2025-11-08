@@ -1,8 +1,26 @@
 "use client";
 
-import { useState, FormEvent, useRef } from "react";
+import { useState, FormEvent, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, X } from "lucide-react";
+import { 
+  Upload, 
+  X, 
+  Home, 
+  MapPin, 
+  DollarSign, 
+  Ruler, 
+  Bed, 
+  Bath, 
+  Building, 
+  Calendar,
+  Car,
+  Square,
+  Warehouse,
+  Sofa,
+  ArrowLeft,
+  Loader2
+} from "lucide-react";
+import Link from "next/link";
 
 // تایپ فرم ملک مطابق مدل Prisma
 interface PropertyForm {
@@ -66,6 +84,7 @@ export default function NewPropertyPage() {
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
     // آپلود فایل‌ها
@@ -75,12 +94,10 @@ export default function NewPropertyPage() {
 
         try {
             const uploadPromises = Array.from(files).map(async (file) => {
-                // بررسی نوع فایل
                 if (!file.type.startsWith('image/')) {
                     throw new Error(`فایل ${file.name} باید یک تصویر باشد`);
                 }
 
-                // بررسی حجم فایل (حداکثر 5MB)
                 if (file.size > 5 * 1024 * 1024) {
                     throw new Error(`حجم فایل ${file.name} نباید بیشتر از 5MB باشد`);
                 }
@@ -100,25 +117,23 @@ export default function NewPropertyPage() {
 
                 const data = await res.json();
 
-                // فقط نام فایل را دریافت می‌کنیم
                 return {
                     fileName: data.fileName,
                     originalName: file.name,
-                    url: `/images/${data.fileName}` // برای پیش‌نمایش
+                    url: `/images/${data.fileName}`
                 };
             });
 
             const results = await Promise.all(uploadPromises);
             const newFileNames = results.map(result => result.fileName);
 
-            // فقط نام فایل‌ها را به فرم اضافه می‌کنیم
             setFormData(prev => ({
                 ...prev,
                 images: [...prev.images, ...newFileNames]
             }));
 
-            // برای پیش‌نمایش
             setUploadedFiles(prev => [...prev, ...results]);
+            setSuccess(`${results.length} فایل با موفقیت آپلود شد`);
 
         } catch (err: any) {
             setError(err.message);
@@ -128,7 +143,7 @@ export default function NewPropertyPage() {
     };
 
     // حذف عکس آپلود شده
-    const removeImage = (index: number) => {
+    const removeImage = useCallback((index: number) => {
         const newImages = [...formData.images];
         const newUploadedFiles = [...uploadedFiles];
 
@@ -137,13 +152,21 @@ export default function NewPropertyPage() {
 
         setFormData(prev => ({ ...prev, images: newImages }));
         setUploadedFiles(newUploadedFiles);
-    };
+    }, [formData.images, uploadedFiles]);
 
     // ذخیره ملک جدید
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccess(null);
+
+        // اعتبارسنجی اولیه
+        if (!formData.title || !formData.propertyType || !formData.dealType) {
+            setError("پر کردن فیلدهای الزامی (عنوان، نوع ملک و نوع معامله) ضروری است");
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await fetch("/api/properties", {
@@ -157,8 +180,11 @@ export default function NewPropertyPage() {
                 throw new Error(errorData.error || "خطا در ایجاد ملک جدید");
             }
 
-            router.push("/dashboard/properties");
-            router.refresh();
+            setSuccess("ملک جدید با موفقیت ایجاد شد");
+            setTimeout(() => {
+                router.push("/dashboard/properties");
+                router.refresh();
+            }, 1500);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -178,313 +204,535 @@ export default function NewPropertyPage() {
         handleChange(field, value === "" ? null : parseInt(value));
     };
 
-    const handleArrayChange = (value: string) => {
-        const imagesArray = value
-            .split(",")
-            .map((img) => img.trim())
-            .filter((img) => img !== "");
-        handleChange("images", imagesArray);
+    const formatPrice = (price: number | null) => {
+        if (!price) return "";
+        return new Intl.NumberFormat('fa-IR').format(price);
+    };
+
+    const parseFormattedPrice = (value: string) => {
+        return parseInt(value.replace(/,/g, '')) || null;
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-8">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800">ایجاد ملک جدید</h1>
-
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                </div>
-            )}
-
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white shadow-md rounded-xl p-6 space-y-6"
-            >
-                {/* اطلاعات اصلی */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block mb-2 text-gray-700">عنوان ملک *</label>
-                        <input
-                            type="text"
-                            value={formData.title}
-                            onChange={(e) => handleChange("title", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block mb-2 text-gray-700">موقعیت *</label>
-                        <input
-                            type="text"
-                            value={formData.location}
-                            onChange={(e) => handleChange("location", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+            {/* هدر */}
+            <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/60 sticky top-0 z-10">
+                <div className="max-w-6xl mx-auto px-4 py-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <Link
+                                href="/dashboard/properties"
+                                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-all duration-300 hover:bg-gray-100 p-2 rounded-xl"
+                            >
+                                <ArrowLeft className="w-5 h-5" />
+                                <span className="hidden sm:inline">بازگشت</span>
+                            </Link>
+                            <div className="h-6 w-0.5 bg-gray-300 hidden sm:block"></div>
+                            <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                                ایجاد ملک جدید
+                            </h1>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Home className="w-6 h-6 text-[#FEC360]" />
+                        </div>
                     </div>
                 </div>
+            </header>
 
-                {/* توضیحات */}
-                <div>
-                    <label className="block mb-2 text-gray-700">توضیحات *</label>
-                    <textarea
-                        value={formData.description}
-                        onChange={(e) => handleChange("description", e.target.value)}
-                        className="border rounded-lg px-3 py-2 w-full min-h-[100px] focus:ring-2 focus:ring-blue-500"
-                        required
-                    />
-                </div>
+            {/* محتوای اصلی */}
+            <main className="max-w-4xl mx-auto px-4 py-8">
+                {/* پیام‌ها */}
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3">
+                        <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <X className="w-4 h-4 text-red-600" />
+                        </div>
+                        <p className="text-red-700 font-medium">{error}</p>
+                    </div>
+                )}
 
-                {/* نوع ملک و نوع معامله */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block mb-2 text-gray-700">نوع ملک *</label>
-                        <select
-                            value={formData.propertyType}
-                            onChange={(e) => handleChange("propertyType", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            required
-                        >
-                            <option value="">انتخاب کنید</option>
-                            <option value="آپارتمان">آپارتمان</option>
-                            <option value="ویلا">ویلا</option>
-                            <option value="دفتر کار">دفتر کار</option>
-                            <option value="مغازه">مغازه</option>
-                            <option value="زمین">زمین</option>
-                        </select>
+                {success && (
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl flex items-center gap-3">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                        </div>
+                        <p className="text-green-700 font-medium">{success}</p>
                     </div>
+                )}
 
-                    <div>
-                        <label className="block mb-2 text-gray-700">نوع معامله *</label>
-                        <select
-                            value={formData.dealType}
-                            onChange={(e) => handleChange("dealType", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            required
-                        >
-                            <option value="">انتخاب کنید</option>
-                            <option value="فروش">فروش</option>
-                            <option value="اجاره">اجاره</option>
-                        </select>
-                    </div>
-                </div>
+                <form
+                    onSubmit={handleSubmit}
+                    className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100"
+                >
+                    {/* اطلاعات اصلی */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Home className="w-4 h-4 text-blue-600" />
+                            </div>
+                            اطلاعات اصلی ملک
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* عنوان */}
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    عنوان ملک *
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={formData.title}
+                                        onChange={(e) => handleChange("title", e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                        placeholder="عنوان جذاب برای ملک"
+                                        required
+                                    />
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <Home className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
 
-                {/* قیمت‌ها */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block mb-2 text-gray-700">قیمت (تومان)</label>
-                        <input
-                            type="number"
-                            value={formData.price || ""}
-                            onChange={(e) => handleNumberChange("price", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            placeholder="قیمت فروش"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-gray-700">ودیعه (تومان)</label>
-                        <input
-                            type="number"
-                            value={formData.depositPrice || ""}
-                            onChange={(e) => handleNumberChange("depositPrice", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            placeholder="مبلغ ودیعه"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-gray-700">اجاره (تومان)</label>
-                        <input
-                            type="number"
-                            value={formData.rentPrice || ""}
-                            onChange={(e) => handleNumberChange("rentPrice", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                            placeholder="مبلغ اجاره"
-                        />
-                    </div>
-                </div>
+                            {/* موقعیت */}
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    موقعیت مکانی *
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={formData.location}
+                                        onChange={(e) => handleChange("location", e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                        placeholder="آدرس یا منطقه"
+                                        required
+                                    />
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <MapPin className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                {/* سایر مشخصات */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <label className="block mb-2 text-gray-700">مساحت (متر)</label>
-                        <input
-                            type="number"
-                            value={formData.area}
-                            onChange={(e) => handleNumberChange("area", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-gray-700">تعداد اتاق</label>
-                        <input
-                            type="number"
-                            value={formData.roomCount || ""}
-                            onChange={(e) => handleIntChange("roomCount", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-gray-700">تعداد حمام</label>
-                        <input
-                            type="number"
-                            value={formData.bathroomCount || ""}
-                            onChange={(e) => handleIntChange("bathroomCount", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 text-gray-700">سال ساخت</label>
-                        <input
-                            type="number"
-                            value={formData.yearBuilt || ""}
-                            onChange={(e) => handleIntChange("yearBuilt", e.target.value)}
-                            className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                </div>
-
-                {/* امکانات */}
-                <div>
-                    <label className="block mb-3 text-gray-700">امکانات</label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.parking}
-                                onChange={(e) => handleChange("parking", e.target.checked)}
+                        {/* توضیحات */}
+                        <div className="mt-6 group">
+                            <label className="block mb-3 text-sm font-medium text-gray-700">
+                                توضیحات *
+                            </label>
+                            <textarea
+                                value={formData.description}
+                                onChange={(e) => handleChange("description", e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition resize-none group-hover:border-gray-400 min-h-[120px]"
+                                placeholder="توضیحات کامل درباره ملک، امکانات و ویژگی‌های خاص..."
+                                required
                             />
-                            پارکینگ
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.elevator}
-                                onChange={(e) => handleChange("elevator", e.target.checked)}
-                            />
-                            آسانسور
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.storage}
-                                onChange={(e) => handleChange("storage", e.target.checked)}
-                            />
-                            انباری
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.furnished}
-                                onChange={(e) => handleChange("furnished", e.target.checked)}
-                            />
-                            مبله
-                        </label>
+                        </div>
                     </div>
-                </div>
 
-                {/* آپلود تصاویر */}
-                <div>
-                    <label className="block mb-3 text-gray-700">آپلود تصاویر</label>
-
-                    {/* دکمه آپلود */}
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center mb-4">
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
-                            className="hidden"
-                        />
-
-                        <div className="flex flex-col items-center justify-center gap-3">
-                            <Upload className="w-12 h-12 text-gray-400" />
-                            <div>
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={uploading}
-                                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    {/* نوع ملک و معامله */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <Building className="w-4 h-4 text-green-600" />
+                            </div>
+                            نوع ملک و معامله
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    نوع ملک *
+                                </label>
+                                <select
+                                    value={formData.propertyType}
+                                    onChange={(e) => handleChange("propertyType", e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 appearance-none bg-white"
+                                    required
                                 >
-                                    {uploading ? "در حال آپلود..." : "انتخاب فایل‌ها"}
-                                </button>
-                                <p className="text-sm text-gray-500 mt-2">
-                                    فرمت‌های مجاز: JPG, PNG, GIF (حداکثر 5MB)
-                                </p>
+                                    <option value="">انتخاب نوع ملک</option>
+                                    <option value="آپارتمان">آپارتمان</option>
+                                    <option value="ویلا">ویلا</option>
+                                    <option value="دفتر کار">دفتر کار</option>
+                                    <option value="مغازه">مغازه</option>
+                                    <option value="زمین">زمین</option>
+                                    <option value="خانه ویلایی">خانه ویلایی</option>
+                                </select>
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    نوع معامله *
+                                </label>
+                                <select
+                                    value={formData.dealType}
+                                    onChange={(e) => handleChange("dealType", e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 appearance-none bg-white"
+                                    required
+                                >
+                                    <option value="">انتخاب نوع معامله</option>
+                                    <option value="فروش">فروش</option>
+                                    <option value="اجاره">اجاره</option>
+                                    <option value="پیش فروش">پیش فروش</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
-                    {/* پیش‌نمایش تصاویر آپلود شده */}
-                    {uploadedFiles.length > 0 && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {uploadedFiles.map((file, index) => (
-                                <div key={index} className="relative group">
-                                    <img
-                                        src={file.url}
-                                        alt={file.originalName}
-                                        className="w-full h-24 object-cover rounded-lg"
+                    {/* قیمت‌ها */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <DollarSign className="w-4 h-4 text-amber-600" />
+                            </div>
+                            اطلاعات مالی
+                        </h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    قیمت فروش (تومان)
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={formatPrice(formData.price)}
+                                        onChange={(e) => handleChange("price", parseFormattedPrice(e.target.value))}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 text-left"
+                                        placeholder="قیمت فروش"
                                     />
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <DollarSign className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    ودیعه (تومان)
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={formatPrice(formData.depositPrice)}
+                                        onChange={(e) => handleChange("depositPrice", parseFormattedPrice(e.target.value))}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 text-left"
+                                        placeholder="مبلغ ودیعه"
+                                    />
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <DollarSign className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    اجاره (تومان)
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={formatPrice(formData.rentPrice)}
+                                        onChange={(e) => handleChange("rentPrice", parseFormattedPrice(e.target.value))}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 text-left"
+                                        placeholder="مبلغ اجاره"
+                                    />
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <DollarSign className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* مشخصات فنی */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <Ruler className="w-4 h-4 text-purple-600" />
+                            </div>
+                            مشخصات فنی
+                        </h2>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    مساحت (متر)
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={formData.area}
+                                        onChange={(e) => handleNumberChange("area", e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                    />
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <Ruler className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    تعداد اتاق
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={formData.roomCount || ""}
+                                        onChange={(e) => handleIntChange("roomCount", e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                    />
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <Bed className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    تعداد حمام
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={formData.bathroomCount || ""}
+                                        onChange={(e) => handleIntChange("bathroomCount", e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                    />
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <Bath className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    سال ساخت
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={formData.yearBuilt || ""}
+                                        onChange={(e) => handleIntChange("yearBuilt", e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                    />
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <Calendar className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* طبقه و تعداد طبقات */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    طبقه
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.floor || ""}
+                                    onChange={(e) => handleIntChange("floor", e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                />
+                            </div>
+
+                            <div className="group">
+                                <label className="block mb-3 text-sm font-medium text-gray-700">
+                                    تعداد کل طبقات
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.totalFloors || ""}
+                                    onChange={(e) => handleIntChange("totalFloors", e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* امکانات */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <Square className="w-4 h-4 text-indigo-600" />
+                            </div>
+                            امکانات
+                        </h2>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-[#FEC360] transition cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.parking}
+                                    onChange={(e) => handleChange("parking", e.target.checked)}
+                                    className="w-4 h-4 text-[#FEC360] focus:ring-[#FEC360] rounded"
+                                />
+                                <Car className="w-5 h-5 text-gray-400 group-hover:text-[#FEC360]" />
+                                <span className="text-gray-700">پارکینگ</span>
+                            </label>
+
+                            <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-[#FEC360] transition cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.elevator}
+                                    onChange={(e) => handleChange("elevator", e.target.checked)}
+                                    className="w-4 h-4 text-[#FEC360] focus:ring-[#FEC360] rounded"
+                                />
+                                <Building className="w-5 h-5 text-gray-400 group-hover:text-[#FEC360]" />
+                                <span className="text-gray-700">آسانسور</span>
+                            </label>
+
+                            <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-[#FEC360] transition cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.storage}
+                                    onChange={(e) => handleChange("storage", e.target.checked)}
+                                    className="w-4 h-4 text-[#FEC360] focus:ring-[#FEC360] rounded"
+                                />
+                                <Warehouse className="w-5 h-5 text-gray-400 group-hover:text-[#FEC360]" />
+                                <span className="text-gray-700">انباری</span>
+                            </label>
+
+                            <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl hover:border-[#FEC360] transition cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.furnished}
+                                    onChange={(e) => handleChange("furnished", e.target.checked)}
+                                    className="w-4 h-4 text-[#FEC360] focus:ring-[#FEC360] rounded"
+                                />
+                                <Sofa className="w-5 h-5 text-gray-400 group-hover:text-[#FEC360]" />
+                                <span className="text-gray-700">مبله</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* آپلود تصاویر */}
+                    <div className="mb-8">
+                        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center">
+                                <Upload className="w-4 h-4 text-rose-600" />
+                            </div>
+                            گالری تصاویر
+                        </h2>
+
+                        {/* دکمه آپلود */}
+                        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center mb-6 transition hover:border-[#FEC360] hover:bg-amber-50/50">
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                multiple
+                                accept="image/*"
+                                onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                                className="hidden"
+                            />
+
+                            <div className="flex flex-col items-center justify-center gap-4">
+                                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
+                                    {uploading ? (
+                                        <Loader2 className="w-6 h-6 text-amber-600 animate-spin" />
+                                    ) : (
+                                        <Upload className="w-6 h-6 text-amber-600" />
+                                    )}
+                                </div>
+                                <div>
                                     <button
                                         type="button"
-                                        onClick={() => removeImage(index)}
-                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={uploading}
+                                        className="bg-gradient-to-r from-[#FEC360] to-amber-500 text-gray-900 px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        <X className="w-4 h-4" />
+                                        {uploading ? "در حال آپلود..." : "انتخاب تصاویر"}
                                     </button>
-                                    <p className="text-xs text-gray-600 truncate mt-1">
-                                        {file.originalName}
-                                    </p>
-                                    <p className="text-xs text-gray-400 truncate">
-                                        {file.fileName}
+                                    <p className="text-sm text-gray-500 mt-3">
+                                        فرمت‌های مجاز: JPG, PNG, GIF • حداکثر حجم: 5MB
                                     </p>
                                 </div>
-                            ))}
+                            </div>
                         </div>
-                    )}
 
-                    {/* فیلد متنی برای نام فایل‌های دستی */}
-                    <div className="mt-4">
-                        <label className="block mb-2 text-gray-700">
-                            یا نام فایل‌ها را وارد کنید (با کاما جدا کنید)
-                        </label>
-                        <textarea
-                            value={formData.images.join(", ")}
-                            onChange={(e) => {
-                                const fileNamesArray = e.target.value
-                                    .split(",")
-                                    .map((name) => name.trim())
-                                    .filter((name) => name !== "");
-                                handleChange("images", fileNamesArray);
-                            }}
-                            className="border rounded-lg px-3 py-2 w-full min-h-[80px] focus:ring-2 focus:ring-blue-500"
-                            placeholder="1700000000000-abc123.jpg, 1700000000001-def456.png"
-                        />
-                        <p className="text-sm text-gray-500 mt-1">
-                            نام فایل‌هایی که قبلاً آپلود کرده‌اید (فقط نام فایل، نه آدرس کامل)
-                        </p>
+                        {/* پیش‌نمایش تصاویر آپلود شده */}
+                        {uploadedFiles.length > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                                {uploadedFiles.map((file, index) => (
+                                    <div key={index} className="relative group">
+                                        <div className="aspect-square rounded-xl overflow-hidden border border-gray-200 group-hover:border-[#FEC360] transition">
+                                            <img
+                                                src={file.url}
+                                                alt={file.originalName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                        <p className="text-xs text-gray-600 truncate mt-2 text-center">
+                                            {file.originalName}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* فیلد متنی برای نام فایل‌های دستی */}
+                        <div className="mt-6 group">
+                            <label className="block mb-3 text-sm font-medium text-gray-700">
+                                یا نام فایل‌های آپلود شده را وارد کنید
+                            </label>
+                            <textarea
+                                value={formData.images.join(", ")}
+                                onChange={(e) => {
+                                    const fileNamesArray = e.target.value
+                                        .split(",")
+                                        .map((name) => name.trim())
+                                        .filter((name) => name !== "");
+                                    handleChange("images", fileNamesArray);
+                                }}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition resize-none group-hover:border-gray-400 min-h-[80px]"
+                                placeholder="1700000000000-abc123.jpg, 1700000000001-def456.png"
+                            />
+                            <p className="text-sm text-gray-500 mt-2">
+                                نام فایل‌هایی که قبلاً آپلود کرده‌اید (با کاما جدا کنید)
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                {/* دکمه‌ها */}
-                <div className="flex gap-3 pt-6 border-t">
-                    <button
-                        type="submit"
-                        disabled={loading || uploading}
-                        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 flex-1 disabled:opacity-50"
-                    >
-                        {loading ? "در حال ایجاد..." : "ایجاد ملک جدید"}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => router.push("/dashboard/properties")}
-                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 flex-1"
-                    >
-                        انصراف
-                    </button>
-                </div>
-            </form>
+                    {/* دکمه‌ها */}
+                    <div className="flex gap-4 pt-8 border-t border-gray-200">
+                        <button
+                            type="button"
+                            onClick={() => router.push("/dashboard/properties")}
+                            className="flex-1 flex items-center justify-center gap-2 bg-gray-500 text-white px-6 py-4 rounded-xl font-semibold hover:bg-gray-600 transition"
+                        >
+                            <X className="w-5 h-5" />
+                            انصراف
+                        </button>
+
+                        <button
+                            type="submit"
+                            disabled={loading || uploading}
+                            className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#FEC360] to-amber-500 text-gray-900 px-6 py-4 rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    در حال ایجاد ملک...
+                                </>
+                            ) : (
+                                <>
+                                    <Home className="w-5 h-5" />
+                                    ایجاد ملک جدید
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </main>
         </div>
     );
 }
