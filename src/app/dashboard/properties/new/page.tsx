@@ -204,13 +204,28 @@ export default function NewPropertyPage() {
         handleChange(field, value === "" ? null : parseInt(value));
     };
 
+    // تابع جدید برای مدیریت قیمت‌ها
+    const handlePriceChange = (field: keyof PropertyForm, value: string) => {
+        // حذف کاراکترهای غیرعددی به جز نقطه و کاما
+        const numericValue = value.replace(/[^\d,]/g, '');
+        
+        if (numericValue === '') {
+            handleChange(field, null);
+            return;
+        }
+
+        // تبدیل به عدد
+        const numberValue = parseInt(numericValue.replace(/,/g, ''));
+        
+        if (!isNaN(numberValue)) {
+            handleChange(field, numberValue);
+        }
+    };
+
+    // تابع جدید برای فرمت قیمت
     const formatPrice = (price: number | null) => {
         if (!price) return "";
         return new Intl.NumberFormat('fa-IR').format(price);
-    };
-
-    const parseFormattedPrice = (value: string) => {
-        return parseInt(value.replace(/,/g, '')) || null;
     };
 
     return (
@@ -397,7 +412,7 @@ export default function NewPropertyPage() {
                                     <input
                                         type="text"
                                         value={formatPrice(formData.price)}
-                                        onChange={(e) => handleChange("price", parseFormattedPrice(e.target.value))}
+                                        onChange={(e) => handlePriceChange("price", e.target.value)}
                                         className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 text-left"
                                         placeholder="قیمت فروش"
                                     />
@@ -415,7 +430,7 @@ export default function NewPropertyPage() {
                                     <input
                                         type="text"
                                         value={formatPrice(formData.depositPrice)}
-                                        onChange={(e) => handleChange("depositPrice", parseFormattedPrice(e.target.value))}
+                                        onChange={(e) => handlePriceChange("depositPrice", e.target.value)}
                                         className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 text-left"
                                         placeholder="مبلغ ودیعه"
                                     />
@@ -433,7 +448,7 @@ export default function NewPropertyPage() {
                                     <input
                                         type="text"
                                         value={formatPrice(formData.rentPrice)}
-                                        onChange={(e) => handleChange("rentPrice", parseFormattedPrice(e.target.value))}
+                                        onChange={(e) => handlePriceChange("rentPrice", e.target.value)}
                                         className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition group-hover:border-gray-400 text-left"
                                         placeholder="مبلغ اجاره"
                                     />
@@ -678,28 +693,6 @@ export default function NewPropertyPage() {
                                 ))}
                             </div>
                         )}
-
-                        {/* فیلد متنی برای نام فایل‌های دستی */}
-                        <div className="mt-6 group">
-                            <label className="block mb-3 text-sm font-medium text-gray-700">
-                                یا نام فایل‌های آپلود شده را وارد کنید
-                            </label>
-                            <textarea
-                                value={formData.images.join(", ")}
-                                onChange={(e) => {
-                                    const fileNamesArray = e.target.value
-                                        .split(",")
-                                        .map((name) => name.trim())
-                                        .filter((name) => name !== "");
-                                    handleChange("images", fileNamesArray);
-                                }}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FEC360] focus:border-transparent transition resize-none group-hover:border-gray-400 min-h-[80px]"
-                                placeholder="1700000000000-abc123.jpg, 1700000000001-def456.png"
-                            />
-                            <p className="text-sm text-gray-500 mt-2">
-                                نام فایل‌هایی که قبلاً آپلود کرده‌اید (با کاما جدا کنید)
-                            </p>
-                        </div>
                     </div>
 
                     {/* دکمه‌ها */}
