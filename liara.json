@@ -1,4 +1,5 @@
 {
+  "platform": "node",
   "app": "saeid-nextjs",
   "port": 3000,
   "build": {
