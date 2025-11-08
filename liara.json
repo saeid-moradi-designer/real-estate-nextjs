@@ -1,5 +1,4 @@
 {
-  "platform": "node",
   "app": "saeid-nextjs",
   "port": 3000,
   "build": {
@@ -8,7 +7,7 @@
   "disks": [
     {
       "name": "khan-disk",
-      "mountPath": "/storage/images"
+      "mountTo": "/storage/images"
     }
   ]
 }
