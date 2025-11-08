@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
     }
 
     // اگر فقط نام فایل در دیتابیس ذخیره شده باشد
-    return `/images/${imageName}`;
+    return `/api/images/profile/${imageName}`;
   };
 
   // افکت برای تشخیص اسکرول
@@ -163,7 +163,7 @@ const Navbar: React.FC = () => {
             <input
               type="text"
               placeholder="جستجوی ملک، مقاله یا مکان..."
-              className="bg-transparent border-none outline-none pr-3 w-full text-sm text-white placeholder:text-white/70"
+              className="bg-transparent border-none outline-none pr-3 w-full text-sm text-white placeholder:text-white/70 text-right"
             />
           </div>
 
