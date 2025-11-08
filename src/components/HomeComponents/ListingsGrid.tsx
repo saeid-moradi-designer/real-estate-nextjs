@@ -16,7 +16,7 @@ interface ListingsGridProps {
 }
 
 const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
-  // تابع دقیقاً مشابه نوبار برای ساخت مسیر تصاویر
+  // استفاده از همان تابع دقیق نوبار
   const getImagePath = (imageName: string | null) => {
     if (!imageName) return "/images/placeholder.jpg";
 
@@ -25,14 +25,13 @@ const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
       return imageName;
     }
 
-    // استفاده از همان API مخصوص پروفایل‌ها برای تصاویر املاک
+    // استفاده از همان API موجود نوبار
     return `/api/images/profiles/${imageName}`;
   };
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full px-4 pb-4">
       {listings.map((listing) => {
-        // ساخت مسیر تصویر دقیقاً مانند نوبار
         const imageSrc = listing.images?.length > 0 
           ? getImagePath(listing.images[0])
           : "/images/placeholder.jpg";
@@ -50,18 +49,16 @@ const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                unoptimized={true} // برای جلوگیری از خطای build
+                unoptimized={true}
                 onError={(e) => {
-                  // اگر عکس لود نشد، placeholder نمایش داده شود
                   const target = e.currentTarget as HTMLImageElement;
                   target.src = "/images/placeholder.jpg";
                 }}
               />
               
-              {/* Overlay گرادینت */}
+              {/* بقیه کد بدون تغییر */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
-              {/* قیمت */}
               {listing.price && (
                 <div className="absolute top-4 left-4">
                   <span className="bg-[#FEC360] text-gray-900 px-3 py-2 rounded-xl font-bold text-sm shadow-lg">
@@ -71,9 +68,7 @@ const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
               )}
             </div>
 
-            {/* محتوای کارت */}
             <div className="p-6 flex flex-col flex-grow">
-              {/* عنوان و لوکیشن */}
               <div className="mb-4">
                 <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-[#FEC360] transition-colors duration-200">
                   {listing.title}
@@ -87,12 +82,10 @@ const ListingsGrid: React.FC<ListingsGridProps> = ({ listings }) => {
                 )}
               </div>
 
-              {/* توضیحات */}
               <p className="text-gray-600 text-sm leading-6 flex-grow mb-6 line-clamp-3">
                 {listing.description}
               </p>
 
-              {/* دکمه جزئیات */}
               <div className="mt-auto">
                 <Link
                   href={`/properties/${String(listing.id)}`}
