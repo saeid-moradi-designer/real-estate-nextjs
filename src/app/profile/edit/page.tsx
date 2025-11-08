@@ -140,7 +140,7 @@ const EditProfilePage = () => {
     await uploadImage(file);
   };
 
-  // در تابع uploadImage
+  // در تابع uploadImage s
   const uploadImage = async (file: File) => {
     setUploading(true);
 
