@@ -17,6 +17,7 @@
     "embla-carousel": "^8.6.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "formidable": "^3.5.4",
     "framer-motion": "^12.23.24",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.552.0",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
+    "@types/formidable": "^3.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",

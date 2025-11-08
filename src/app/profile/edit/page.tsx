@@ -13,7 +13,8 @@ import {
   Camera,
   Save,
   X,
-  Upload
+  Upload,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -35,14 +36,16 @@ const EditProfilePage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     bio: "",
-    image: ""
+    image: "",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState("");
 
@@ -64,7 +67,7 @@ const EditProfilePage = () => {
             name: userData.name || "",
             phone: userData.phone || "",
             bio: userData.bio || "",
-            image: userData.image || ""
+            image: userData.image || "",
           });
           setImagePreview(userData.image ? getImagePath(userData.image) : null);
         }
@@ -85,32 +88,81 @@ const EditProfilePage = () => {
     return `/images/${imageName}`;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
-    // حذف خطای فیلد هنگام تایپ
+
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // در اینجا باید آپلود عکس را مدیریت کنید
-      // برای نمونه، فقط پیش‌نمایش نمایش داده می‌شود
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // اعتبارسنجی فایل
+    if (!file.type.startsWith("image/")) {
+      setErrors({ image: "فایل باید یک تصویر باشد" });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors({ image: "حجم فایل نباید بیشتر از 5MB باشد" });
+      return;
+    }
+
+    setSelectedFile(file);
+    setErrors((prev) => ({ ...prev, image: "" }));
+
+    // نمایش پیش‌نمایش
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // آپلود خودکار فایل
+    await uploadImage(file);
+  };
+
+  const uploadImage = async (file: File) => {
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // ذخیره نام فایل در فرم
+        setFormData((prev) => ({
+          ...prev,
+          image: result.fileName,
+        }));
+        setErrors((prev) => ({ ...prev, image: "" }));
+      } else {
+        setErrors({ image: result.error || "خطا در آپلود عکس" });
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setErrors({ image: "خطا در آپلود عکس" });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -135,7 +187,7 @@ const EditProfilePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -182,8 +234,12 @@ const EditProfilePage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <X className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">خطا در دریافت اطلاعات</h2>
-          <p className="text-gray-600 mb-4">مشکلی در دریافت اطلاعات پروفایل پیش آمده است.</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            خطا در دریافت اطلاعات
+          </h2>
+          <p className="text-gray-600 mb-4">
+            مشکلی در دریافت اطلاعات پروفایل پیش آمده است.
+          </p>
           <Link
             href="/profile"
             className="inline-flex items-center gap-2 bg-[#FEC360] text-gray-900 px-6 py-3 rounded-xl font-semibold hover:bg-amber-500 transition"
@@ -210,7 +266,9 @@ const EditProfilePage = () => {
                 <ArrowLeft className="w-5 h-5" />
                 بازگشت
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">ویرایش پروفایل</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                ویرایش پروفایل
+              </h1>
             </div>
           </div>
         </div>
@@ -218,11 +276,14 @@ const EditProfilePage = () => {
 
       {/* محتوای اصلی */}
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-lg p-6"
+        >
           {/* عکس پروفایل */}
           <div className="text-center mb-8">
             <div className="relative inline-block">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden border-2 border-gray-300">
                 {imagePreview ? (
                   <Image
                     src={imagePreview}
@@ -233,20 +294,32 @@ const EditProfilePage = () => {
                 ) : (
                   <User className="w-16 h-16 text-gray-400" />
                 )}
+
+                {uploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  </div>
+                )}
               </div>
-              
-              <label className="absolute bottom-2 right-2 bg-[#FEC360] text-gray-900 p-2 rounded-full shadow-lg hover:bg-amber-500 transition cursor-pointer">
+
+              <label className="absolute bottom-2 right-2 bg-[#FEC360] text-gray-900 p-2 rounded-full shadow-lg hover:bg-amber-500 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                 <Camera className="w-4 h-4" />
                 <input
                   type="file"
                   className="hidden"
                   accept="image/*"
                   onChange={handleImageChange}
+                  disabled={uploading}
                 />
               </label>
             </div>
-            
-            <p className="text-sm text-gray-500 mt-2">برای تغییر عکس کلیک کنید</p>
+
+            <p className="text-sm text-gray-500 mt-2">
+              {uploading ? "در حال آپلود..." : "برای تغییر عکس کلیک کنید"}
+            </p>
+            {errors.image && (
+              <p className="text-sm text-red-600 mt-1">{errors.image}</p>
+            )}
           </div>
 
           {/* پیام موفقیت */}
@@ -266,7 +339,10 @@ const EditProfilePage = () => {
           <div className="space-y-6">
             {/* نام */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 نام کامل
               </label>
               <div className="relative">
@@ -290,7 +366,10 @@ const EditProfilePage = () => {
 
             {/* ایمیل (غیرقابل ویرایش) */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 آدرس ایمیل
               </label>
               <div className="relative">
@@ -305,12 +384,17 @@ const EditProfilePage = () => {
                   className="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-500"
                 />
               </div>
-              <p className="mt-1 text-sm text-gray-500">ایمیل قابل ویرایش نیست</p>
+              <p className="mt-1 text-sm text-gray-500">
+                ایمیل قابل ویرایش نیست
+              </p>
             </div>
 
             {/* تلفن */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 شماره تلفن
               </label>
               <div className="relative">
@@ -334,7 +418,10 @@ const EditProfilePage = () => {
 
             {/* بیوگرافی */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 درباره من
               </label>
               <textarea
@@ -350,7 +437,11 @@ const EditProfilePage = () => {
                 {errors.bio && (
                   <p className="text-sm text-red-600">{errors.bio}</p>
                 )}
-                <p className={`text-sm ${formData.bio.length > 500 ? 'text-red-600' : 'text-gray-500'}`}>
+                <p
+                  className={`text-sm ${
+                    formData.bio.length > 500 ? "text-red-600" : "text-gray-500"
+                  }`}
+                >
                   {formData.bio.length}/500
                 </p>
               </div>
@@ -365,10 +456,10 @@ const EditProfilePage = () => {
                 <X className="w-4 h-4" />
                 انصراف
               </Link>
-              
+
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || uploading}
                 className="flex-1 flex items-center justify-center gap-2 bg-[#FEC360] text-gray-900 px-6 py-3 rounded-xl font-semibold hover:bg-amber-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (

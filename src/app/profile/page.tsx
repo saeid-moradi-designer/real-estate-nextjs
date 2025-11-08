@@ -16,7 +16,7 @@ import {
   Home,
   FileText,
   ArrowLeft,
-  Camera
+  Camera,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -88,8 +88,12 @@ const ProfilePage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">خطا در دریافت اطلاعات</h2>
-          <p className="text-gray-600 mb-4">مشکلی در دریافت اطلاعات پروفایل پیش آمده است.</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            خطا در دریافت اطلاعات
+          </h2>
+          <p className="text-gray-600 mb-4">
+            مشکلی در دریافت اطلاعات پروفایل پیش آمده است.
+          </p>
           <Link
             href="/"
             className="inline-flex items-center gap-2 bg-[#FEC360] text-gray-900 px-6 py-3 rounded-xl font-semibold hover:bg-amber-500 transition"
@@ -116,7 +120,9 @@ const ProfilePage = () => {
                 <ArrowLeft className="w-5 h-5" />
                 بازگشت
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">پروفایل کاربری</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                پروفایل کاربری
+              </h1>
             </div>
             <Link
               href="/profile/edit"
@@ -141,13 +147,16 @@ const ProfilePage = () => {
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden">
                     {userProfile.image ? (
                       <Image
-                        src={getImagePath(userProfile.image) || "/images/placeholder-avatar.jpg"}
+                        src={
+                          getImagePath(userProfile.image) ||
+                          "/images/placeholder-avatar.jpg"
+                        }
                         alt={userProfile.name || "User"}
                         fill
                         className="object-cover"
                         onError={(e) => {
                           const target = e.currentTarget as HTMLImageElement;
-                          target.style.display = 'none';
+                          target.style.display = "none";
                         }}
                       />
                     ) : (
@@ -158,24 +167,30 @@ const ProfilePage = () => {
                     <Camera className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 <h2 className="text-xl font-bold text-gray-900 mt-4">
                   {userProfile.name || "بدون نام"}
                 </h2>
-                <p className="text-gray-500 text-sm mt-1">{userProfile.email}</p>
-                
+                <p className="text-gray-500 text-sm mt-1">
+                  {userProfile.email}
+                </p>
+
                 {/* وضعیت تأیید */}
-                <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium mt-2 ${
-                  userProfile.isVerified 
-                    ? "bg-green-100 text-green-800" 
-                    : "bg-yellow-100 text-yellow-800"
-                }`}>
+                <div
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium mt-2 ${
+                    userProfile.isVerified
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
                   {userProfile.isVerified ? (
                     <CheckCircle className="w-3 h-3" />
                   ) : (
                     <XCircle className="w-3 h-3" />
                   )}
-                  {userProfile.isVerified ? "حساب تأیید شده" : "در انتظار تأیید"}
+                  {userProfile.isVerified
+                    ? "حساب تأیید شده"
+                    : "در انتظار تأیید"}
                 </div>
               </div>
 
@@ -186,15 +201,21 @@ const ProfilePage = () => {
                     <Home className="w-4 h-4 text-gray-500" />
                     <span className="text-sm text-gray-600">املاک ثبت شده</span>
                   </div>
-                  <span className="font-bold text-gray-900">{userProfile._count.properties}</span>
+                  <span className="font-bold text-gray-900">
+                    {userProfile._count.properties}
+                  </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">مقالات نوشته شده</span>
+                    <span className="text-sm text-gray-600">
+                      مقالات نوشته شده
+                    </span>
                   </div>
-                  <span className="font-bold text-gray-900">{userProfile._count.posts}</span>
+                  <span className="font-bold text-gray-900">
+                    {userProfile._count.posts}
+                  </span>
                 </div>
               </div>
             </div>
@@ -203,8 +224,10 @@ const ProfilePage = () => {
           {/* اطلاعات اصلی */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">اطلاعات شخصی</h3>
-              
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
+                اطلاعات شخصی
+              </h3>
+
               <div className="space-y-6">
                 {/* نام */}
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
@@ -212,7 +235,9 @@ const ProfilePage = () => {
                     <User className="w-5 h-5 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-500">نام کامل</label>
+                    <label className="block text-sm font-medium text-gray-500">
+                      نام کامل
+                    </label>
                     <p className="text-gray-900 font-medium">
                       {userProfile.name || "ثبت نشده"}
                     </p>
@@ -225,8 +250,12 @@ const ProfilePage = () => {
                     <Mail className="w-5 h-5 text-green-600" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-500">آدرس ایمیل</label>
-                    <p className="text-gray-900 font-medium">{userProfile.email}</p>
+                    <label className="block text-sm font-medium text-gray-500">
+                      آدرس ایمیل
+                    </label>
+                    <p className="text-gray-900 font-medium">
+                      {userProfile.email}
+                    </p>
                   </div>
                 </div>
 
@@ -236,7 +265,9 @@ const ProfilePage = () => {
                     <Phone className="w-5 h-5 text-purple-600" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-500">شماره تلفن</label>
+                    <label className="block text-sm font-medium text-gray-500">
+                      شماره تلفن
+                    </label>
                     <p className="text-gray-900 font-medium">
                       {userProfile.phone || "ثبت نشده"}
                     </p>
@@ -249,7 +280,9 @@ const ProfilePage = () => {
                     <Shield className="w-5 h-5 text-orange-600" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-500">نقش کاربری</label>
+                    <label className="block text-sm font-medium text-gray-500">
+                      نقش کاربری
+                    </label>
                     <p className="text-gray-900 font-medium">
                       {userProfile.role === "ADMIN" ? "مدیر" : "کاربر عادی"}
                     </p>
@@ -262,9 +295,13 @@ const ProfilePage = () => {
                     <Calendar className="w-5 h-5 text-indigo-600" />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-500">تاریخ عضویت</label>
+                    <label className="block text-sm font-medium text-gray-500">
+                      تاریخ عضویت
+                    </label>
                     <p className="text-gray-900 font-medium">
-                      {new Date(userProfile.createdAt).toLocaleDateString("fa-IR")}
+                      {new Date(userProfile.createdAt).toLocaleDateString(
+                        "fa-IR"
+                      )}
                     </p>
                   </div>
                 </div>
@@ -272,8 +309,12 @@ const ProfilePage = () => {
                 {/* بیوگرافی */}
                 {userProfile.bio && (
                   <div className="p-4 bg-gray-50 rounded-xl">
-                    <label className="block text-sm font-medium text-gray-500 mb-2">درباره من</label>
-                    <p className="text-gray-700 leading-relaxed">{userProfile.bio}</p>
+                    <label className="block text-sm font-medium text-gray-500 mb-2">
+                      درباره من
+                    </label>
+                    <p className="text-gray-700 leading-relaxed">
+                      {userProfile.bio}
+                    </p>
                   </div>
                 )}
               </div>
@@ -288,7 +329,7 @@ const ProfilePage = () => {
                 <Home className="w-5 h-5" />
                 مدیریت املاک
               </Link>
-              
+
               <Link
                 href="/dashboard/posts"
                 className="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-green-700 transition text-center"
