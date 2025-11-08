@@ -41,17 +41,17 @@ export async function POST(request: NextRequest) {
     const fileExtension = file.name.split('.').pop();
     const fileName = `profile-${timestamp}-${random}.${fileExtension}`;
 
-    // مسیر ذخیره‌سازی در پوشه images
-    const imagesDir = join(process.cwd(), 'public', 'images');
-
-    // اطمینان از وجود پوشه images
-    if (!existsSync(imagesDir)) {
-      await mkdir(imagesDir, { recursive: true });
+    // مسیر ذخیره‌سازی در دیسک لیارا
+    const storageDir = '/storage/images/profiles';
+    
+    // اطمینان از وجود پوشه
+    if (!existsSync(storageDir)) {
+      await mkdir(storageDir, { recursive: true });
     }
 
-    const filePath = join(imagesDir, fileName);
+    const filePath = join(storageDir, fileName);
 
-    // ذخیره فایل در پوشه images
+    // ذخیره فایل در دیسک لیارا
     await writeFile(filePath, buffer);
 
     // فقط نام فایل را برگردانید

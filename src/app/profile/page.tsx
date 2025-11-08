@@ -68,11 +68,17 @@ const ProfilePage = () => {
     fetchUserProfile();
   }, [session, status, router]);
 
-  // تابع برای ساخت مسیر کامل عکس
+  // در صفحات نمایش و ویرایش پروفایل
   const getImagePath = (imageName: string | null) => {
     if (!imageName) return null;
-    if (imageName.startsWith("http")) return imageName;
-    return `/images/${imageName}`;
+
+    // اگر imagePath یک URL کامل است (از قبل ذخیره شده)
+    if (imageName.startsWith("http")) {
+      return imageName;
+    }
+
+    // ساخت URL برای دسترسی از طریق API
+    return `/api/images/profiles/${imageName}`;
   };
 
   if (status === "loading" || loading) {
