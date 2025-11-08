@@ -6,10 +6,12 @@ import { existsSync } from 'fs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const filePath = join('/storage/images', ...params.path);
+    // در Next.js 14 باید params را await کنیم
+    const { path } = await params;
+    const filePath = join('/storage/images', ...path);
 
     // بررسی وجود فایل
     if (!existsSync(filePath)) {
@@ -20,13 +22,13 @@ export async function GET(
     const fileBuffer = await readFile(filePath);
     
     // تشخیص نوع فایل
-    const extension = params.path[params.path.length - 1].split('.').pop();
+    const extension = path[path.length - 1].split('.').pop();
     const contentType = getContentType(extension || '');
 
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000', // کش برای 1 سال
+        'Cache-Control': 'public, max-age=31536000',
       },
     });
   } catch (error) {
